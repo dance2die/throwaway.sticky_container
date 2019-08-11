@@ -39,16 +39,11 @@ function StickySection({ children, as: Component = 'section', ...rest }) {
 }
 
 function StickyRoot({ children, as: Component = 'div', ...rest }) {
-  const state = useStickyState()
   const dispatch = useStickyDispatch()
 
   const addContainerRef = containerRef => {
     dispatch({ type: ActionType.setContainerRef, payload: { containerRef } })
   }
-
-  // useEffect(() => {
-  //   console.log(`Sticky Parent state`, state);
-  // }, [state]);
 
   return (
     <Component ref={addContainerRef} {...rest}>
