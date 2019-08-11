@@ -1,0 +1,26 @@
+.sticky {
+  position: sticky;
+  top: 0;
+}
+
+
+.sticky__section {
+  position: relative;
+}
+
+
+.sticky__sentinel_top {
+  background: yellow;
+  position: absolute;
+  left: 0;
+  right: 0;
+  visibility: hidden;
+}
+
+.sticky__sentinel_bottom {
+  background: yellow;
+  position: absolute;
+  left: 0;
+  right: 0;
+  visibility: hidden;
+}

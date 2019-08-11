@@ -7,6 +7,9 @@ import {
   ActionType,
 } from './Context'
 
+import styles from './index.module.scss'
+console.log(`styles`, styles)
+
 function Sticky({ children, as: Component = 'div', ...rest }) {
   const dispatch = useStickyDispatch()
 
@@ -15,7 +18,7 @@ function Sticky({ children, as: Component = 'div', ...rest }) {
   }
 
   return (
-    <Component ref={addStickyRef} {...rest}>
+    <Component ref={addStickyRef} {...rest} className={styles.sticky}>
       {children}
     </Component>
   )
@@ -23,10 +26,10 @@ function Sticky({ children, as: Component = 'div', ...rest }) {
 
 function StickySection({ children, as: Component = 'section', ...rest }) {
   return (
-    <Component {...rest}>
-      <div>sentinel top</div>
+    <Component className={styles.sticky__section} {...rest}>
+      <div className={styles.sticky__sentinel_top}>sentinel top</div>
       {children}
-      <div>sentinel bottom</div>
+      <div className={styles.sticky__sentinel_bottom}>sentinel bottom</div>
     </Component>
   )
 }
