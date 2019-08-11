@@ -9,7 +9,7 @@ import {
 
 let renderCount = 1;
 
-function Sticky({ children }) {
+function Sticky({ children, as: Component = "div", ...rest }) {
   // const ref = useRef(null);
   // const dispatch = useStickyDispatch();
 
@@ -25,15 +25,23 @@ function Sticky({ children }) {
   // }, [ref, dispatch]);
 
   return (
-    <div ref={addRef}>
-      <div>sentinel top</div>
+    <Component ref={addRef} {...rest}>
       {children}
-      <div>sentinel bottom</div>
-    </div>
+    </Component>
   );
 }
 
-function StickyParent({ children, as: Component = "div", ...props }) {
+function StickySection({ children, as: Component = "section", ...rest }) {
+  return (
+    <Component {...rest}>
+      <div>sentinel top</div>
+      {children}
+      <div>sentinel bottom</div>
+    </Component>
+  );
+}
+
+function StickyRoot({ children, as: Component = "div", ...rest }) {
   const state = useStickyState();
   const dispatch = useStickyDispatch();
 
@@ -47,7 +55,7 @@ function StickyParent({ children, as: Component = "div", ...props }) {
   }, [state]);
 
   return (
-    <Component ref={addRef} {...props}>
+    <Component ref={addRef} {...rest}>
       {children}
     </Component>
   );
@@ -56,11 +64,17 @@ function StickyParent({ children, as: Component = "div", ...props }) {
 function StickyContainer({ children, as: Component = "div", ...rest }) {
   return (
     <StickyProvider>
-      <StickyParent as={Component} {...rest}>
+      <StickyRoot as={Component} {...rest}>
         {children}
-      </StickyParent>
+      </StickyRoot>
     </StickyProvider>
   );
 }
 
-export { StickyContainer, Sticky, useStickyState, useStickyDispatch };
+export {
+  StickyContainer,
+  StickySection,
+  Sticky,
+  useStickyState,
+  useStickyDispatch
+};
