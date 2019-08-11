@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import {
   StickyProvider,
@@ -7,19 +7,12 @@ import {
   ActionType,
 } from './Context'
 
-let renderCount = 1
-
 function Sticky({ children, as: Component = 'div', ...rest }) {
-  const state = useStickyState()
   const dispatch = useStickyDispatch()
 
   const addStickyRef = stickyRef => {
     dispatch({ type: ActionType.addStickyRef, payload: { stickyRef } })
   }
-
-  useEffect(() => {
-    console.log(`child state`, state, renderCount++)
-  }, [state])
 
   return (
     <Component ref={addStickyRef} {...rest}>

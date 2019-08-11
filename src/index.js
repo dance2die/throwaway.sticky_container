@@ -9,11 +9,11 @@ function App() {
   return (
     <div className='App'>
       <StickyContainer as='main'>
-        <StickySection>
+        <StickySection className='stick__section'>
           <Sticky as='h1'>Sticky Header 1</Sticky>
           <article>1 -- Some content under the sticky header</article>
         </StickySection>
-        <StickySection>
+        <StickySection className='stick__section'>
           <Sticky as='h1'>Sticky Header 2</Sticky>
           <article>2 -- Some content under the sticky header</article>
         </StickySection>
