@@ -10,22 +10,19 @@ import {
 let renderCount = 1;
 
 function Sticky({ children, as: Component = "div", ...rest }) {
-  // const ref = useRef(null);
-  // const dispatch = useStickyDispatch();
+  const state = useStickyState();
+  const dispatch = useStickyDispatch();
 
-  const addRef = current => {
-    console.log(`current`, current, renderCount++);
-    // setChildRefs(prev => prev.concat({ ref: { current } }));
-    // dispatch({ type: ActionType.AddRef, payload: { ref } });
+  const addStickyRef = stickyRef => {
+    dispatch({ type: ActionType.addStickyRef, payload: { stickyRef } });
   };
 
-  // useEffect(() => {
-  //   dispatch({ type: ActionType.AddRef, payload: { ref } });
-  //   console.log(`child ref`, ref);
-  // }, [ref, dispatch]);
+  useEffect(() => {
+    console.log(`child state`, state, renderCount++);
+  }, [state]);
 
   return (
-    <Component ref={addRef} {...rest}>
+    <Component ref={addStickyRef} {...rest}>
       {children}
     </Component>
   );
@@ -45,17 +42,16 @@ function StickyRoot({ children, as: Component = "div", ...rest }) {
   const state = useStickyState();
   const dispatch = useStickyDispatch();
 
-  const addRef = containerRef => {
-    console.log(`containerRef node`, { containerRef });
+  const addContainerRef = containerRef => {
     dispatch({ type: ActionType.setContainerRef, payload: { containerRef } });
   };
 
-  useEffect(() => {
-    console.log(`Sticky Parent state`, state);
-  }, [state]);
+  // useEffect(() => {
+  //   console.log(`Sticky Parent state`, state);
+  // }, [state]);
 
   return (
-    <Component ref={addRef} {...rest}>
+    <Component ref={addContainerRef} {...rest}>
       {children}
     </Component>
   );

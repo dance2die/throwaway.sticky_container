@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer } from "react";
 
 const initialState = {
   containerRef: null,
-  refs: []
+  stickyRefs: []
 };
 
 const StickyStateContext = createContext(initialState);
@@ -10,7 +10,7 @@ const StickyDispatchContext = createContext();
 
 const ActionType = {
   setContainerRef: "set container ref",
-  addChildRef: "add ref"
+  addStickyRef: "add sticky ref"
 };
 
 function reducer(state, action) {
@@ -19,8 +19,10 @@ function reducer(state, action) {
     case ActionType.setContainerRef:
       // Reassigning a new ref, will infinitely re-load!
       return Object.assign(state, { containerRef: payload.containerRef });
-    case ActionType.addChildRef:
-      return { ...state, refs: state.refs.push(payload.ref) };
+    case ActionType.addStickyRef:
+      return Object.assign(state, {
+        stickyRefs: state.stickyRefs.concat(payload.stickyRef)
+      });
     default:
       return state;
   }
