@@ -46,10 +46,16 @@ function StickySection({
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) onUnstuck(entry)
-          else onStuck(entry)
+          let type = ''
+          if (entry.isIntersecting) {
+            type = 'unstuck'
+            onUnstuck(entry)
+          } else {
+            type = 'stuck'
+            onStuck(entry)
+          }
 
-          onChange(entry)
+          onChange({ type, entry })
         })
       },
       { threshold: [0] }

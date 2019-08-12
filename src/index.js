@@ -14,6 +14,9 @@ function App() {
     console.log(`UNstuck!`, entry)
     entry.target.style.backgroundColor = 'rebeccapurple'
   }
+  const handleChange = ({ entry, type }) => {
+    console.log(`Changed!!`, type, entry)
+  }
 
   return (
     <div className='App'>
@@ -22,6 +25,7 @@ function App() {
           style={{ height: '90vh' }}
           onStuck={handleStuck}
           onUnstuck={handleUnstuck}
+          onChange={handleChange}
         >
           <Sticky as='h1'>Sticky Header 1</Sticky>
           <article>1 -- Some content under the sticky header</article>
