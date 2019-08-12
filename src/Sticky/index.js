@@ -42,54 +42,72 @@ function StickySection({
 }) {
   const topRef = useRef(null)
   const bottomRef = useRef(null)
-  const { stickyRefs } = useStickyState()
+  const { stickyRefs, containerRef } = useStickyState()
   const [sentinelHeight, setSentinelHeight] = useState(0)
-  // const [sentinelMarginTop, setSentinelMarginTop] = useState(0)
 
-  // useEffect(() => {
-  //   const container = topRef.current
-  //   const observer = new IntersectionObserver(
-  //     entries => {
-  //       entries.forEach(entry => {
-  //         const targetEntry = stickyRefs.get(entry.target)
+  useEffect(() => {
+    const container = topRef.current
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const container = containerRef.current
+          const target = stickyRefs.get(entry.target)
 
-  //         let type = ''
-  //         if (entry.isIntersecting) {
-  //           type = 'unstuck'
-  //           onUnstuck(targetEntry)
-  //         } else {
-  //           type = 'stuck'
-  //           onStuck(targetEntry)
-  //         }
+          const targetInfo = entry.boundingClientRect
+          const rootBoundsInfo = entry.rootBounds
 
-  //         onChange({ type, targetEntry })
-  //       })
-  //     },
-  //     { threshold: [0] }
-  //   )
+          let type = ''
+          // Started sticking.
+          if (targetInfo.bottom < rootBoundsInfo.top) {
+            type = 'stuck'
+            onStuck(target)
+          }
 
-  //   container && observer.observe(container)
+          // Stopped sticking.
+          if (
+            targetInfo.bottom >= rootBoundsInfo.top &&
+            targetInfo.bottom < rootBoundsInfo.bottom
+          ) {
+            type = 'unstuck'
+            onUnstuck(target)
+          }
 
-  //   return () => observer.unobserve(container)
-  // }, [topRef, onChange, onStuck, onUnstuck, stickyRefs])
+          // if (entry.isIntersecting) {
+          //   type = 'unstuck'
+          //   onUnstuck(target)
+          // } else {
+          //   type = 'stuck'
+          //   onStuck(target)
+          // }
+
+          onChange({ type, target })
+        })
+      },
+      { threshold: [0] }
+    )
+
+    container && observer.observe(container)
+
+    return () => observer.unobserve(container)
+  }, [topRef, onChange, onStuck, onUnstuck, stickyRefs, containerRef])
 
   // useEffect(() => {
   //   const container = bottomRef.current
   //   const observer = new IntersectionObserver(
   //     entries => {
   //       entries.forEach(entry => {
-  //         const targetEntry = stickyRefs.get(entry.target)
+  //         const target = stickyRefs.get(entry.target)
 
   //         let type = ''
   //         if (entry.isIntersecting) {
   //           type = 'stuck'
-  //           onStuck(targetEntry)
+  //           onStuck(target)
   //         } else {
   //           type = 'unstuck'
-  //           onUnstuck(targetEntry)
+  //           onUnstuck(target)
   //         }
 
-  //         onChange({ type, targetEntry })
+  //         onChange({ type, target })
   //       })
   //     },
   //     { threshold: [0] }
