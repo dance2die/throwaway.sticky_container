@@ -18,11 +18,11 @@ function App() {
     // console.log(`Changed!!`, type, targetEntry)
   }
 
-  const stickySectionElements = Array.from({ length: 2 }, (_, i) => i + 1).map(
+  const stickySectionElements = Array.from({ length: 3 }, (_, i) => i + 1).map(
     key => (
       <StickySection
         key={key}
-        style={{ height: '90vh' }}
+        style={{ height: '105vh' }}
         onStuck={handleStuck}
         onUnstuck={handleUnstuck}
         onChange={handleChange}
