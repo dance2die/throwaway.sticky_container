@@ -43,7 +43,7 @@ function StickySection({
   const topRef = useRef(null)
   const bottomRef = useRef(null)
   const { stickyRefs, containerRef } = useStickyState()
-  const [sentinelHeight, setSentinelHeight] = useState(0)
+  const [sentinelMarginTop, setSentinelMarginTop] = useState(0)
 
   useEffect(() => {
     const container = topRef.current
@@ -58,7 +58,7 @@ function StickySection({
 
           let type = ''
           // Started sticking.
-          if (targetInfo.bottom < rootBoundsInfo.top) {
+          if (targetInfo.top < rootBoundsInfo.top) {
             type = 'stuck'
             onStuck(target)
           }
@@ -71,14 +71,6 @@ function StickySection({
             type = 'unstuck'
             onUnstuck(target)
           }
-
-          // if (entry.isIntersecting) {
-          //   type = 'unstuck'
-          //   onUnstuck(target)
-          // } else {
-          //   type = 'stuck'
-          //   onStuck(target)
-          // }
 
           onChange({ type, target })
         })
@@ -124,12 +116,12 @@ function StickySection({
     const height = topStyle.getPropertyValue('height')
     const paddingTop = topStyle.getPropertyValue('padding-top')
     const paddingBottom = topStyle.getPropertyValue('padding-bottom')
-    // const marginTop = topStyle.getPropertyValue('margin-top')
+    const marginTop = topStyle.getPropertyValue('margin-top')
 
     const newHeight =
       parseFloat(height) + parseFloat(paddingTop) + parseFloat(paddingBottom)
     // parseFloat(marginTop)
-    setSentinelHeight(newHeight)
+    setSentinelMarginTop(parseFloat(marginTop))
   }, [stickyRefs])
 
   const value = { topRef, bottomRef }
@@ -138,7 +130,7 @@ function StickySection({
       <Component className={styles.sticky__section} {...rest}>
         <div
           ref={topRef}
-          style={{ height: `${sentinelHeight}px` }}
+          style={{ marginTop: `-${sentinelMarginTop}px` }}
           className={styles.sticky__sentinel_top}
         >
           sentinel top
@@ -147,7 +139,7 @@ function StickySection({
         <div
           ref={bottomRef}
           style={{
-            height: `${sentinelHeight}px`,
+            height: `${sentinelMarginTop}px`,
           }}
           className={styles.sticky__sentinel_bottom}
         >
