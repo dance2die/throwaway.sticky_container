@@ -44,6 +44,7 @@ function StickySection({
   const bottomRef = useRef(null)
   const { stickyRefs } = useStickyState()
   const [sentinelHeight, setSentinelHeight] = useState(0)
+  // const [sentinelMarginTop, setSentinelMarginTop] = useState(0)
 
   // useEffect(() => {
   //   const container = topRef.current
@@ -105,13 +106,11 @@ function StickySection({
     const height = topStyle.getPropertyValue('height')
     const paddingTop = topStyle.getPropertyValue('padding-top')
     const paddingBottom = topStyle.getPropertyValue('padding-bottom')
-    const marginTop = topStyle.getPropertyValue('margin-top')
+    // const marginTop = topStyle.getPropertyValue('margin-top')
 
     const newHeight =
-      parseFloat(height) +
-      parseFloat(paddingTop) +
-      parseFloat(paddingBottom) +
-      parseFloat(marginTop)
+      parseFloat(height) + parseFloat(paddingTop) + parseFloat(paddingBottom)
+    // parseFloat(marginTop)
     setSentinelHeight(newHeight)
   }, [stickyRefs])
 
@@ -129,7 +128,9 @@ function StickySection({
         {children}
         <div
           ref={bottomRef}
-          style={{ height: `${sentinelHeight}px` }}
+          style={{
+            height: `${sentinelHeight}px`,
+          }}
           className={styles.sticky__sentinel_bottom}
         >
           sentinel bottom
