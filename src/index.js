@@ -14,8 +14,9 @@ function App() {
           <article>1 -- Some content under the sticky header</article>
         </StickySection>
         <StickySection style={{ height: '90vh' }}>
-          <Sticky as='h1'>Sticky Header 2</Sticky>
+          <Sticky as='h1'>Sticky Header 2.1</Sticky>
           <article>2 -- Some content under the sticky header</article>
+          <Sticky as='h1'>Sticky Header 2.2</Sticky>
         </StickySection>
         <StickySection style={{ height: '90vh' }}>
           <Sticky as='h1'>Sticky Header 3</Sticky>
