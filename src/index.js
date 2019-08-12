@@ -6,19 +6,19 @@ import './styles.css'
 import { StickyContainer, StickySection, Sticky } from './Sticky'
 
 function App() {
-  const handleStuck = entry => {
-    console.log(`Stuck!`, entry)
-    entry.target.style.backgroundColor = '#4caf50'
+  const handleStuck = targetEntry => {
+    // console.log(`Stuck!`, targetEntry)
+    targetEntry.style.backgroundColor = '#4caf50'
   }
-  const handleUnstuck = entry => {
-    console.log(`UNstuck!`, entry)
-    entry.target.style.backgroundColor = 'rebeccapurple'
+  const handleUnstuck = targetEntry => {
+    // console.log(`UNstuck!`, targetEntry)
+    targetEntry.style.backgroundColor = 'rebeccapurple'
   }
-  const handleChange = ({ entry, type }) => {
-    console.log(`Changed!!`, type, entry)
+  const handleChange = ({ targetEntry, type }) => {
+    // console.log(`Changed!!`, type, targetEntry)
   }
 
-  const stickySectionElements = Array.from({ length: 10 }, (_, i) => i + 1).map(
+  const stickySectionElements = Array.from({ length: 2 }, (_, i) => i + 1).map(
     key => (
       <StickySection
         key={key}

@@ -19,7 +19,7 @@ function Sticky({ children, as: Component = 'div', ...rest }) {
   const addStickyRef = stickyRef => {
     dispatch({
       type: ActionType.addStickyRef,
-      payload: { key: topRef, value: stickyRef },
+      payload: { key: topRef.current, value: stickyRef },
     })
   }
 
@@ -40,22 +40,26 @@ function StickySection({
 }) {
   const topRef = useRef(null)
   const bottomRef = useRef(null)
+  const { stickyRefs } = useStickyState()
 
   useEffect(() => {
     const container = topRef.current
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
+          const targetEntry = stickyRefs.get(entry.target)
+          console.log(`targetEntry`, targetEntry)
+
           let type = ''
           if (entry.isIntersecting) {
             type = 'unstuck'
-            onUnstuck(entry)
+            onUnstuck(targetEntry)
           } else {
             type = 'stuck'
-            onStuck(entry)
+            onStuck(targetEntry)
           }
 
-          onChange({ type, entry })
+          onChange({ type, targetEntry })
         })
       },
       { threshold: [0] }
@@ -64,7 +68,32 @@ function StickySection({
     container && observer.observe(container)
 
     return () => observer.unobserve(container)
-  }, [topRef, onChange, onStuck, onUnstuck])
+  }, [topRef, onChange, onStuck, onUnstuck, stickyRefs])
+
+  // useEffect(() => {
+  //   const container = bottomRef.current
+  //   const observer = new IntersectionObserver(
+  //     entries => {
+  //       entries.forEach(entry => {
+  //         let type = ''
+  //         if (entry.isIntersecting) {
+  //           type = 'stuck'
+  //           onStuck(entry)
+  //         } else {
+  //           type = 'unstuck'
+  //           onUnstuck(entry)
+  //         }
+
+  //         onChange({ type, entry })
+  //       })
+  //     },
+  //     { threshold: [0] }
+  //   )
+
+  //   container && observer.observe(container)
+
+  //   return () => observer.unobserve(container)
+  // }, [bottomRef, onChange, onStuck, onUnstuck])
 
   const value = { topRef, bottomRef }
   return (
