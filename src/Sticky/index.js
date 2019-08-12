@@ -1,23 +1,26 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useContext } from 'react'
 
 import {
   StickyProvider,
   useStickyDispatch,
   useStickyState,
   ActionType,
+  StickySectionContext,
 } from './Context'
 
 import styles from './index.module.scss'
 
-console.log(`styles`, styles)
-
 const noop = () => {}
 
 function Sticky({ children, as: Component = 'div', ...rest }) {
+  const { topRef } = useContext(StickySectionContext)
   const dispatch = useStickyDispatch()
 
   const addStickyRef = stickyRef => {
-    dispatch({ type: ActionType.addStickyRef, payload: { stickyRef } })
+    dispatch({
+      type: ActionType.addStickyRef,
+      payload: { key: topRef, value: stickyRef },
+    })
   }
 
   return (
@@ -39,12 +42,9 @@ function StickySection({
   const bottomRef = useRef(null)
 
   useEffect(() => {
-    // console.log(`topRef ==> `, topRef)
-
     const container = topRef.current
     const observer = new IntersectionObserver(
       entries => {
-        // console.log(`topRef entries`, topRef, entries)
         entries.forEach(entry => {
           if (entry.isIntersecting) onUnstuck(entry)
           else onStuck(entry)
@@ -60,21 +60,19 @@ function StickySection({
     return () => observer.unobserve(container)
   }, [topRef, onChange, onStuck, onUnstuck])
 
-  // useEffect(() => {
-  //   observe(bottomRef)
-  //   return () => unobserve(bottomRef)
-  // }, [bottomRef])
-
+  const value = { topRef, bottomRef }
   return (
-    <Component className={styles.sticky__section} {...rest}>
-      <div ref={topRef} className={styles.sticky__sentinel_top}>
-        sentinel top
-      </div>
-      {children}
-      <div ref={bottomRef} className={styles.sticky__sentinel_bottom}>
-        sentinel bottom
-      </div>
-    </Component>
+    <StickySectionContext.Provider value={value}>
+      <Component className={styles.sticky__section} {...rest}>
+        <div ref={topRef} className={styles.sticky__sentinel_top}>
+          sentinel top
+        </div>
+        {children}
+        <div ref={bottomRef} className={styles.sticky__sentinel_bottom}>
+          sentinel bottom
+        </div>
+      </Component>
+    </StickySectionContext.Provider>
   )
 }
 

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer } from 'react'
 
 const initialState = {
   containerRef: null,
-  stickyRefs: [],
+  stickyRefs: new Map(),
 }
 
 const StickyStateContext = createContext(initialState)
@@ -20,8 +20,10 @@ function reducer(state, action) {
       // Reassigning a new ref, will infinitely re-load!
       return Object.assign(state, { containerRef: payload.containerRef })
     case ActionType.addStickyRef:
+      const { key, value } = payload
+      console.log(`ActionType.addStickyRef key, value`, key, value)
       return Object.assign(state, {
-        stickyRefs: state.stickyRefs.concat(payload.stickyRef),
+        stickyRefs: state.stickyRefs.set(key, value),
       })
     default:
       return state
@@ -56,4 +58,12 @@ function useStickyDispatch() {
   return context
 }
 
-export { StickyProvider, useStickyState, useStickyDispatch, ActionType }
+const StickySectionContext = createContext()
+
+export {
+  StickyProvider,
+  useStickyState,
+  useStickyDispatch,
+  ActionType,
+  StickySectionContext,
+}
