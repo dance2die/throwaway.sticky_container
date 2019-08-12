@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useContext } from 'react'
+import React, { useEffect, useRef, useContext, useState } from 'react'
 
 import {
   StickyProvider,
@@ -43,70 +43,95 @@ function StickySection({
   const topRef = useRef(null)
   const bottomRef = useRef(null)
   const { stickyRefs } = useStickyState()
+  const [sentinelHeight, setSentinelHeight] = useState(0)
+
+  // useEffect(() => {
+  //   const container = topRef.current
+  //   const observer = new IntersectionObserver(
+  //     entries => {
+  //       entries.forEach(entry => {
+  //         const targetEntry = stickyRefs.get(entry.target)
+
+  //         let type = ''
+  //         if (entry.isIntersecting) {
+  //           type = 'unstuck'
+  //           onUnstuck(targetEntry)
+  //         } else {
+  //           type = 'stuck'
+  //           onStuck(targetEntry)
+  //         }
+
+  //         onChange({ type, targetEntry })
+  //       })
+  //     },
+  //     { threshold: [0] }
+  //   )
+
+  //   container && observer.observe(container)
+
+  //   return () => observer.unobserve(container)
+  // }, [topRef, onChange, onStuck, onUnstuck, stickyRefs])
+
+  // useEffect(() => {
+  //   const container = bottomRef.current
+  //   const observer = new IntersectionObserver(
+  //     entries => {
+  //       entries.forEach(entry => {
+  //         const targetEntry = stickyRefs.get(entry.target)
+
+  //         let type = ''
+  //         if (entry.isIntersecting) {
+  //           type = 'stuck'
+  //           onStuck(targetEntry)
+  //         } else {
+  //           type = 'unstuck'
+  //           onUnstuck(targetEntry)
+  //         }
+
+  //         onChange({ type, targetEntry })
+  //       })
+  //     },
+  //     { threshold: [0] }
+  //   )
+
+  //   container && observer.observe(container)
+
+  //   return () => observer.unobserve(container)
+  // }, [bottomRef, onChange, onStuck, onUnstuck, stickyRefs])
 
   useEffect(() => {
-    const container = topRef.current
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          const targetEntry = stickyRefs.get(entry.target)
+    const topSentinel = stickyRefs.get(topRef.current)
+    const topStyle = window.getComputedStyle(topSentinel)
+    const height = topStyle.getPropertyValue('height')
+    const paddingTop = topStyle.getPropertyValue('padding-top')
+    const paddingBottom = topStyle.getPropertyValue('padding-bottom')
+    const marginTop = topStyle.getPropertyValue('margin-top')
 
-          let type = ''
-          if (entry.isIntersecting) {
-            type = 'unstuck'
-            onUnstuck(targetEntry)
-          } else {
-            type = 'stuck'
-            onStuck(targetEntry)
-          }
-
-          onChange({ type, targetEntry })
-        })
-      },
-      { threshold: [0] }
-    )
-
-    container && observer.observe(container)
-
-    return () => observer.unobserve(container)
-  }, [topRef, onChange, onStuck, onUnstuck, stickyRefs])
-
-  useEffect(() => {
-    const container = bottomRef.current
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          const targetEntry = stickyRefs.get(entry.target)
-
-          let type = ''
-          if (entry.isIntersecting) {
-            type = 'stuck'
-            onStuck(targetEntry)
-          } else {
-            type = 'unstuck'
-            onUnstuck(targetEntry)
-          }
-
-          onChange({ type, targetEntry })
-        })
-      },
-      { threshold: [0] }
-    )
-
-    container && observer.observe(container)
-
-    return () => observer.unobserve(container)
-  }, [bottomRef, onChange, onStuck, onUnstuck, stickyRefs])
+    const newHeight =
+      parseFloat(height) +
+      parseFloat(paddingTop) +
+      parseFloat(paddingBottom) +
+      parseFloat(marginTop)
+    setSentinelHeight(newHeight)
+  }, [stickyRefs])
 
   const value = { topRef, bottomRef }
   return (
     <StickySectionContext.Provider value={value}>
       <Component className={styles.sticky__section} {...rest}>
-        <div ref={topRef} className={styles.sticky__sentinel_top}>
+        <div
+          ref={topRef}
+          style={{ height: `${sentinelHeight}px` }}
+          className={styles.sticky__sentinel_top}
+        >
           sentinel top
         </div>
         {children}
-        <div ref={bottomRef} className={styles.sticky__sentinel_bottom}>
+        <div
+          ref={bottomRef}
+          style={{ height: `${sentinelHeight}px` }}
+          className={styles.sticky__sentinel_bottom}
+        >
           sentinel bottom
         </div>
       </Component>

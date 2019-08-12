@@ -21,12 +21,12 @@ function reducer(state, action) {
       return Object.assign(state, { containerRef: payload.containerRef })
     case ActionType.addStickyRef:
       const { topRef, bottomRef, value } = payload
-      console.log(
-        `ActionType.addStickyRef topRef.currunt, bottomRef.current, value`,
-        topRef.current,
-        bottomRef.current,
-        value
-      )
+      // console.log(
+      //   `ActionType.addStickyRef topRef.currunt, bottomRef.current, value`,
+      //   topRef.current,
+      //   bottomRef.current,
+      //   value
+      // )
       state.stickyRefs.set(topRef.current, value)
       state.stickyRefs.set(bottomRef.current, value)
 
