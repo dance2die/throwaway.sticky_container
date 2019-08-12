@@ -13,13 +13,15 @@ import styles from './index.module.scss'
 const noop = () => {}
 
 function Sticky({ children, as: Component = 'div', ...rest }) {
-  const { topRef } = useContext(StickySectionContext)
+  const { topRef, bottomRef } = useContext(StickySectionContext)
   const dispatch = useStickyDispatch()
 
+  // So that we can retrieve correct child target element
+  // from either a top sentinel or a bottom sentinel
   const addStickyRef = stickyRef => {
     dispatch({
       type: ActionType.addStickyRef,
-      payload: { key: topRef.current, value: stickyRef },
+      payload: { topRef, bottomRef, value: stickyRef },
     })
   }
 
@@ -48,7 +50,6 @@ function StickySection({
       entries => {
         entries.forEach(entry => {
           const targetEntry = stickyRefs.get(entry.target)
-          console.log(`targetEntry`, targetEntry)
 
           let type = ''
           if (entry.isIntersecting) {
@@ -70,30 +71,32 @@ function StickySection({
     return () => observer.unobserve(container)
   }, [topRef, onChange, onStuck, onUnstuck, stickyRefs])
 
-  // useEffect(() => {
-  //   const container = bottomRef.current
-  //   const observer = new IntersectionObserver(
-  //     entries => {
-  //       entries.forEach(entry => {
-  //         let type = ''
-  //         if (entry.isIntersecting) {
-  //           type = 'stuck'
-  //           onStuck(entry)
-  //         } else {
-  //           type = 'unstuck'
-  //           onUnstuck(entry)
-  //         }
+  useEffect(() => {
+    const container = bottomRef.current
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const targetEntry = stickyRefs.get(entry.target)
 
-  //         onChange({ type, entry })
-  //       })
-  //     },
-  //     { threshold: [0] }
-  //   )
+          let type = ''
+          if (entry.isIntersecting) {
+            type = 'stuck'
+            onStuck(targetEntry)
+          } else {
+            type = 'unstuck'
+            onUnstuck(targetEntry)
+          }
 
-  //   container && observer.observe(container)
+          onChange({ type, targetEntry })
+        })
+      },
+      { threshold: [0] }
+    )
 
-  //   return () => observer.unobserve(container)
-  // }, [bottomRef, onChange, onStuck, onUnstuck])
+    container && observer.observe(container)
+
+    return () => observer.unobserve(container)
+  }, [bottomRef, onChange, onStuck, onUnstuck, stickyRefs])
 
   const value = { topRef, bottomRef }
   return (

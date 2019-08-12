@@ -20,10 +20,18 @@ function reducer(state, action) {
       // Reassigning a new ref, will infinitely re-load!
       return Object.assign(state, { containerRef: payload.containerRef })
     case ActionType.addStickyRef:
-      const { key, value } = payload
-      console.log(`ActionType.addStickyRef key, value`, key, value)
+      const { topRef, bottomRef, value } = payload
+      console.log(
+        `ActionType.addStickyRef topRef.currunt, bottomRef.current, value`,
+        topRef.current,
+        bottomRef.current,
+        value
+      )
+      state.stickyRefs.set(topRef.current, value)
+      state.stickyRefs.set(bottomRef.current, value)
+
       return Object.assign(state, {
-        stickyRefs: state.stickyRefs.set(key, value),
+        stickyRefs: state.stickyRefs,
       })
     default:
       return state
