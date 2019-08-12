@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import {
   StickyProvider,
@@ -8,7 +8,10 @@ import {
 } from './Context'
 
 import styles from './index.module.scss'
+
 console.log(`styles`, styles)
+
+const noop = () => {}
 
 function Sticky({ children, as: Component = 'div', ...rest }) {
   const dispatch = useStickyDispatch()
@@ -24,12 +27,53 @@ function Sticky({ children, as: Component = 'div', ...rest }) {
   )
 }
 
-function StickySection({ children, as: Component = 'section', ...rest }) {
+function StickySection({
+  as: Component = 'section',
+  onChange = noop,
+  onStuck = noop,
+  onUnstuck = noop,
+  children,
+  ...rest
+}) {
+  const topRef = useRef(null)
+  const bottomRef = useRef(null)
+
+  useEffect(() => {
+    // console.log(`topRef ==> `, topRef)
+
+    const container = topRef.current
+    const observer = new IntersectionObserver(
+      entries => {
+        // console.log(`topRef entries`, topRef, entries)
+        entries.forEach(entry => {
+          if (entry.isIntersecting) onUnstuck(entry)
+          else onStuck(entry)
+
+          onChange(entry)
+        })
+      },
+      { threshold: [0] }
+    )
+
+    container && observer.observe(container)
+
+    return () => observer.unobserve(container)
+  }, [topRef, onChange, onStuck, onUnstuck])
+
+  // useEffect(() => {
+  //   observe(bottomRef)
+  //   return () => unobserve(bottomRef)
+  // }, [bottomRef])
+
   return (
     <Component className={styles.sticky__section} {...rest}>
-      <div className={styles.sticky__sentinel_top}>sentinel top</div>
+      <div ref={topRef} className={styles.sticky__sentinel_top}>
+        sentinel top
+      </div>
       {children}
-      <div className={styles.sticky__sentinel_bottom}>sentinel bottom</div>
+      <div ref={bottomRef} className={styles.sticky__sentinel_bottom}>
+        sentinel bottom
+      </div>
     </Component>
   )
 }
