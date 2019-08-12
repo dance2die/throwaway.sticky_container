@@ -18,32 +18,24 @@ function App() {
     console.log(`Changed!!`, type, entry)
   }
 
+  const stickySectionElements = Array.from({ length: 10 }, (_, i) => i + 1).map(
+    key => (
+      <StickySection
+        key={key}
+        style={{ height: '90vh' }}
+        onStuck={handleStuck}
+        onUnstuck={handleUnstuck}
+        onChange={handleChange}
+      >
+        <Sticky as='h1'>Sticky Header {key}</Sticky>
+        <article>{key} -- Some content under the sticky header</article>
+      </StickySection>
+    )
+  )
+
   return (
     <div className='App'>
-      <StickyContainer as='main'>
-        <StickySection
-          style={{ height: '90vh' }}
-          onStuck={handleStuck}
-          onUnstuck={handleUnstuck}
-          onChange={handleChange}
-        >
-          <Sticky as='h1'>Sticky Header 1</Sticky>
-          <article>1 -- Some content under the sticky header</article>
-        </StickySection>
-        <StickySection
-          style={{ height: '90vh' }}
-          onStuck={handleStuck}
-          onUnstuck={handleUnstuck}
-        >
-          <Sticky as='h1'>Sticky Header 2.1</Sticky>
-          <article>2 -- Some content under the sticky header</article>
-          <Sticky as='h1'>Sticky Header 2.2</Sticky>
-        </StickySection>
-        <StickySection style={{ height: '90vh' }}>
-          <Sticky as='h1'>Sticky Header 3</Sticky>
-          <article>3 -- Some content under the sticky header</article>
-        </StickySection>
-      </StickyContainer>
+      <StickyContainer as='main'>{stickySectionElements}</StickyContainer>
     </div>
   )
 }
