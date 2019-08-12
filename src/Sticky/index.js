@@ -13,7 +13,9 @@ import styles from './index.module.scss'
 const noop = () => {}
 
 function Sticky({ children, as: Component = 'div', ...rest }) {
-  const { topRef, bottomRef } = useContext(StickySectionContext)
+  const { sectionRef, topSentinelRef, bottomSentinelRef } = useContext(
+    StickySectionContext
+  )
   const dispatch = useStickyDispatch()
 
   // So that we can retrieve correct child target element
@@ -21,7 +23,12 @@ function Sticky({ children, as: Component = 'div', ...rest }) {
   const addStickyRef = stickyRef => {
     dispatch({
       type: ActionType.addStickyRef,
-      payload: { topRef, bottomRef, value: stickyRef },
+      payload: {
+        sectionRef,
+        topSentinelRef,
+        bottomSentinelRef,
+        value: stickyRef,
+      },
     })
   }
 
@@ -40,21 +47,31 @@ function StickySection({
   children,
   ...rest
 }) {
-  const topRef = useRef(null)
-  const bottomRef = useRef(null)
+  const sectionRef = useRef(null)
+  const topSentinelRef = useRef(null)
+  const bottomSentinelRef = useRef(null)
+
   const { stickyRefs, containerRef } = useStickyState()
   const [sentinelMarginTop, setSentinelMarginTop] = useState(0)
 
   useEffect(() => {
-    const container = topRef.current
+    const root = sectionRef.current
+    console.log(`section root`, root)
+
+    const topSentinelNode = topSentinelRef.current
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
-          const container = containerRef.current
           const target = stickyRefs.get(entry.target)
-
           const targetInfo = entry.boundingClientRect
           const rootBoundsInfo = entry.rootBounds
+
+          // console.log(
+          //   `target , targetInfo, rootBoundsInfo`,
+          //   target,
+          //   targetInfo,
+          //   rootBoundsInfo
+          // )
 
           let type = ''
           // Started sticking.
@@ -78,58 +95,25 @@ function StickySection({
       { threshold: [0] }
     )
 
-    container && observer.observe(container)
+    topSentinelNode && observer.observe(topSentinelNode)
 
-    return () => observer.unobserve(container)
-  }, [topRef, onChange, onStuck, onUnstuck, stickyRefs, containerRef])
-
-  // useEffect(() => {
-  //   const container = bottomRef.current
-  //   const observer = new IntersectionObserver(
-  //     entries => {
-  //       entries.forEach(entry => {
-  //         const target = stickyRefs.get(entry.target)
-
-  //         let type = ''
-  //         if (entry.isIntersecting) {
-  //           type = 'stuck'
-  //           onStuck(target)
-  //         } else {
-  //           type = 'unstuck'
-  //           onUnstuck(target)
-  //         }
-
-  //         onChange({ type, target })
-  //       })
-  //     },
-  //     { threshold: [0] }
-  //   )
-
-  //   container && observer.observe(container)
-
-  //   return () => observer.unobserve(container)
-  // }, [bottomRef, onChange, onStuck, onUnstuck, stickyRefs])
+    return () => observer.unobserve(topSentinelNode)
+  }, [topSentinelRef, onChange, onStuck, onUnstuck, stickyRefs, containerRef])
 
   useEffect(() => {
-    const topSentinel = stickyRefs.get(topRef.current)
+    const topSentinel = stickyRefs.get(topSentinelRef.current)
     const topStyle = window.getComputedStyle(topSentinel)
-    const height = topStyle.getPropertyValue('height')
-    const paddingTop = topStyle.getPropertyValue('padding-top')
-    const paddingBottom = topStyle.getPropertyValue('padding-bottom')
     const marginTop = topStyle.getPropertyValue('margin-top')
 
-    const newHeight =
-      parseFloat(height) + parseFloat(paddingTop) + parseFloat(paddingBottom)
-    // parseFloat(marginTop)
     setSentinelMarginTop(parseFloat(marginTop))
   }, [stickyRefs])
 
-  const value = { topRef, bottomRef }
+  const value = { sectionRef, topSentinelRef, bottomSentinelRef }
   return (
     <StickySectionContext.Provider value={value}>
-      <Component className={styles.sticky__section} {...rest}>
+      <Component ref={sectionRef} className={styles.sticky__section} {...rest}>
         <div
-          ref={topRef}
+          ref={topSentinelRef}
           style={{ marginTop: `-${sentinelMarginTop}px` }}
           className={styles.sticky__sentinel_top}
         >
@@ -137,7 +121,7 @@ function StickySection({
         </div>
         {children}
         <div
-          ref={bottomRef}
+          ref={bottomSentinelRef}
           style={{
             height: `${sentinelMarginTop}px`,
           }}
