@@ -84,15 +84,7 @@ function StickySection({
           const targetInfo = entry.boundingClientRect
           const rootBoundsInfo = entry.rootBounds
 
-          // console.log(
-          //   `target , targetInfo, rootBoundsInfo`,
-          //   target,
-          //   targetInfo,
-          //   rootBoundsInfo
-          // )
-
           let type = ''
-
           // Stopped sticking.
           if (
             targetInfo.bottom >= rootBoundsInfo.top &&
