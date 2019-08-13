@@ -18,7 +18,9 @@ function reducer(state, action) {
   switch (type) {
     case ActionType.setContainerRef:
       // Reassigning a new ref, will infinitely re-load!
-      return Object.assign(state, { containerRef: payload.containerRef })
+      return Object.assign(state, {
+        containerRef: { current: payload.containerRef },
+      })
     case ActionType.addStickyRef:
       const { sectionRef, topSentinelRef, bottomSentinelRef, value } = payload
       // console.log(

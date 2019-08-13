@@ -55,10 +55,10 @@ function StickySection({
   const [sentinelMarginTop, setSentinelMarginTop] = useState(0)
 
   useEffect(() => {
-    const root = sectionRef.current
-    console.log(`section root`, root)
+    if (!containerRef) return
+    if (!containerRef.current) return
+    const root = containerRef.current
 
-    const topSentinelNode = topSentinelRef.current
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
@@ -74,11 +74,6 @@ function StickySection({
           // )
 
           let type = ''
-          // Started sticking.
-          if (targetInfo.top < rootBoundsInfo.top) {
-            type = 'stuck'
-            onStuck(target)
-          }
 
           // Stopped sticking.
           if (
@@ -88,15 +83,20 @@ function StickySection({
             type = 'unstuck'
             onUnstuck(target)
           }
+          // Started sticking.
+          else if (targetInfo.top < rootBoundsInfo.top) {
+            type = 'stuck'
+            onStuck(target)
+          }
 
           onChange({ type, target })
         })
       },
-      { threshold: [0] }
+      { threshold: [0], root }
     )
 
+    const topSentinelNode = topSentinelRef.current
     topSentinelNode && observer.observe(topSentinelNode)
-
     return () => observer.unobserve(topSentinelNode)
   }, [topSentinelRef, onChange, onStuck, onUnstuck, stickyRefs, containerRef])
 

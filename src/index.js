@@ -5,6 +5,12 @@ import './styles.css'
 
 import { StickyContainer, StickySection, Sticky } from './Sticky'
 
+const containerStyle = {
+  height: '50vh',
+  width: '90vw',
+  overflowY: 'auto',
+}
+
 function App() {
   const handleStuck = targetEntry => {
     console.log(`Stuck!`, targetEntry)
@@ -37,7 +43,9 @@ function App() {
 
   return (
     <div className='App'>
-      <StickyContainer as='main'>{stickySectionElements}</StickyContainer>
+      <StickyContainer as='main' style={containerStyle}>
+        {stickySectionElements}
+      </StickyContainer>
     </div>
   )
 }
