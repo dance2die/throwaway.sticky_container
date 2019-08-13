@@ -23,12 +23,7 @@ function reducer(state, action) {
       })
     case ActionType.addStickyRef:
       const { sectionRef, topSentinelRef, bottomSentinelRef, value } = payload
-      // console.log(
-      //   `ActionType.addStickyRef topSentinelRef.currunt, bottomSentinelRef.current, value`,
-      //   topSentinelRef.current,
-      //   bottomSentinelRef.current,
-      //   value
-      // )
+
       state.stickyRefs.set(sectionRef.current, value)
       state.stickyRefs.set(topSentinelRef.current, value)
       state.stickyRefs.set(bottomSentinelRef.current, value)

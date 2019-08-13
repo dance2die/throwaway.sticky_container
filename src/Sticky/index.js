@@ -32,6 +32,8 @@ function Sticky({ children, as: Component = 'div', ...rest }) {
     })
   }
 
+  useEffect(() => {}, [])
+
   return (
     <Component ref={addStickyRef} {...rest} className={styles.sticky}>
       {children}
@@ -52,21 +54,26 @@ function StickySection({
   const bottomSentinelRef = useRef(null)
 
   const { stickyRefs, containerRef } = useStickyState()
-  const [targetHeight, setTargetHeight] = useState(0)
-  const [sentinelMarginTop, setSentinelMarginTop] = useState(0)
+  const [targetHeight, setTargetHeight] = useState('')
+  const [sentinelMarginTop, setSentinelMarginTop] = useState('')
 
   // Move the sentinel up by the top margin of the sticky component
   useEffect(() => {
     const topSentinel = stickyRefs.get(topSentinelRef.current)
 
     const topStyle = window.getComputedStyle(topSentinel)
-    const getProp = name => parseFloat(topStyle.getPropertyValue(name))
+    const getProp = name => topStyle.getPropertyValue(name)
     const paddingtop = getProp('padding-top')
     const paddingBottom = getProp('padding-bottom')
     const height = getProp('height')
     const marginTop = getProp('margin-top')
 
-    const targetHeight = paddingtop + height + paddingBottom
+    const targetHeight = `calc(${marginTop} +
+      ${paddingtop} +
+      ${height} +
+      ${paddingBottom})`
+
+    // console.log(`targetHeight`, targetHeight)
     setTargetHeight(targetHeight)
     setSentinelMarginTop(marginTop)
   }, [stickyRefs])
@@ -111,6 +118,8 @@ function StickySection({
   }, [topSentinelRef, onChange, onStuck, onUnstuck, stickyRefs, containerRef])
 
   useEffect(() => {
+    console.log(`bottom render`)
+
     if (!containerRef) return
     if (!containerRef.current) return
     const root = containerRef.current
@@ -129,9 +138,8 @@ function StickySection({
             type = 'stuck from bottom'
             onStuck(target)
           }
-
           // Stopped sticking.
-          if (
+          else if (
             targetInfo.top < rootBoundsInfo.top &&
             targetInfo.bottom < rootBoundsInfo.bottom
           ) {
@@ -145,16 +153,20 @@ function StickySection({
       { threshold: [1], root }
     )
 
-    const topSentinelNode = bottomSentinelRef.current
-    topSentinelNode && observer.observe(topSentinelNode)
-    return () => observer.unobserve(topSentinelNode)
+    const bottomSentinelNode = bottomSentinelRef.current
+    bottomSentinelNode && observer.observe(bottomSentinelNode)
+    bottomSentinelNode && console.log(`bottom observing~~~~~`)
+    return () => {
+      console.log(`bottom unobserve.........`)
+      return observer.unobserve(bottomSentinelNode)
+    }
   }, [
     bottomSentinelRef,
+    containerRef,
     onChange,
     onStuck,
     onUnstuck,
     stickyRefs,
-    containerRef,
   ])
 
   const value = { sectionRef, topSentinelRef, bottomSentinelRef }
@@ -163,7 +175,7 @@ function StickySection({
       <Component ref={sectionRef} className={styles.sticky__section} {...rest}>
         <div
           ref={topSentinelRef}
-          style={{ marginTop: `-${sentinelMarginTop}px` }}
+          style={{ marginTop: `-${sentinelMarginTop}` }}
           className={styles.sticky__sentinel_top}
         >
           sentinel top
@@ -172,7 +184,7 @@ function StickySection({
         <div
           ref={bottomSentinelRef}
           style={{
-            height: `${targetHeight + sentinelMarginTop}px`,
+            height: `${targetHeight}`,
           }}
           className={styles.sticky__sentinel_bottom}
         >

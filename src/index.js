@@ -14,21 +14,25 @@ const containerStyle = {
 function App() {
   const handleStuck = target => {
     // console.log(`Stuck!`, target)
-    target.style.backgroundColor = '#4caf50'
-    target.style.boxShadow =
-      '0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.4)'
+    // target.style.backgroundColor = '#4caf50'
+    // target.style.boxShadow =
+    //   '0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.4)'
   }
   const handleUnstuck = target => {
-    console.log(`UNstuck!`, target)
-    target.style.backgroundColor = 'rebeccapurple'
-    target.style.boxShadow = ''
+    // console.log(`UNstuck!`, target)
+    // target.style.backgroundColor = 'rebeccapurple'
+    // target.style.boxShadow = ''
   }
   const handleChange = ({ target, type }) => {
-    // console.log(`Changed!!`, type, target)
-    // if (type.startsWith('stuck'))
-    //   target.style.boxShadow =
-    //     '0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.4)'
-    // else target.style.boxShadow = ''
+    console.log(`Changed!!`, type, target)
+    if (type.startsWith('stuck')) {
+      target.style.backgroundColor = '#4caf50'
+      target.style.boxShadow =
+        '0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.4)'
+    } else {
+      target.style.backgroundColor = 'rebeccapurple'
+      target.style.boxShadow = ''
+    }
   }
 
   const stickySectionElements = Array.from({ length: 3 }, (_, i) => i + 1).map(
