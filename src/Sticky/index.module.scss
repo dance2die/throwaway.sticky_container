@@ -13,7 +13,7 @@
 
 
 .sticky__sentinel_top {
-  background: yellow;
+  background: yellowgreen;
   position: absolute;
   left: 0;
   right: 0;
@@ -23,8 +23,8 @@
 }
 
 .sticky__sentinel_bottom {
-  z-index: -1;
-  background: yellow;
+  z-index:-1;
+  background: rgba(255, 255, 0, 0.39);
   position: absolute;
   left: 0;
   right: 0;
