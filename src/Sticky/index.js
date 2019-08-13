@@ -54,6 +54,15 @@ function StickySection({
   const { stickyRefs, containerRef } = useStickyState()
   const [sentinelMarginTop, setSentinelMarginTop] = useState(0)
 
+  // Move the sentinel up by the top margin of the sticky component
+  useEffect(() => {
+    const topSentinel = stickyRefs.get(topSentinelRef.current)
+    const topStyle = window.getComputedStyle(topSentinel)
+    const marginTop = topStyle.getPropertyValue('margin-top')
+
+    setSentinelMarginTop(parseFloat(marginTop))
+  }, [stickyRefs])
+
   useEffect(() => {
     if (!containerRef) return
     if (!containerRef.current) return
@@ -99,14 +108,6 @@ function StickySection({
     topSentinelNode && observer.observe(topSentinelNode)
     return () => observer.unobserve(topSentinelNode)
   }, [topSentinelRef, onChange, onStuck, onUnstuck, stickyRefs, containerRef])
-
-  useEffect(() => {
-    const topSentinel = stickyRefs.get(topSentinelRef.current)
-    const topStyle = window.getComputedStyle(topSentinel)
-    const marginTop = topStyle.getPropertyValue('margin-top')
-
-    setSentinelMarginTop(parseFloat(marginTop))
-  }, [stickyRefs])
 
   const value = { sectionRef, topSentinelRef, bottomSentinelRef }
   return (
