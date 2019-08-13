@@ -72,6 +72,7 @@ function StickySection({
       entries => {
         entries.forEach(entry => {
           const target = stickyRefs.get(entry.target)
+
           const targetInfo = entry.boundingClientRect
           const rootBoundsInfo = entry.rootBounds
 
@@ -108,6 +109,53 @@ function StickySection({
     topSentinelNode && observer.observe(topSentinelNode)
     return () => observer.unobserve(topSentinelNode)
   }, [topSentinelRef, onChange, onStuck, onUnstuck, stickyRefs, containerRef])
+
+  useEffect(() => {
+    if (!containerRef) return
+    if (!containerRef.current) return
+    const root = containerRef.current
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          const target = stickyRefs.get(entry.target)
+          const targetInfo = entry.boundingClientRect
+          const rootBoundsInfo = entry.rootBounds
+          const ratio = entry.intersectionRatio
+
+          let type = ''
+          // Started sticking.
+          if (targetInfo.bottom > rootBoundsInfo.top && ratio === 1) {
+            type = 'stuck from bottom'
+            onStuck(target)
+          }
+
+          // Stopped sticking.
+          if (
+            targetInfo.top < rootBoundsInfo.top &&
+            targetInfo.bottom < rootBoundsInfo.bottom
+          ) {
+            type = 'unstuck from bottom'
+            onUnstuck(target)
+          }
+
+          onChange({ type, target })
+        })
+      },
+      { threshold: [1], root }
+    )
+
+    const topSentinelNode = bottomSentinelRef.current
+    topSentinelNode && observer.observe(topSentinelNode)
+    return () => observer.unobserve(topSentinelNode)
+  }, [
+    bottomSentinelRef,
+    onChange,
+    onStuck,
+    onUnstuck,
+    stickyRefs,
+    containerRef,
+  ])
 
   const value = { sectionRef, topSentinelRef, bottomSentinelRef }
   return (
